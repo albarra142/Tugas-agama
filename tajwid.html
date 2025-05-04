@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Tajwid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e6a817;
+            border-radius: 15px;
+            color: white;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+        }
+        
+        .quiz-container {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .arabic-text {
+            font-size: 24px;
+            direction: rtl;
+            margin-bottom: 15px;
+            text-align: center;
+            font-family: 'Traditional Arabic', serif;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            background-color: #009973;
+            color: white;
+            border-color: #009973;
+        }
+        
+        .option.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        
+        .option.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .check-btn {
+            background-color: #e6a817;
+            color: white;
+        }
+        
+        .next-btn {
+            background-color: #009973;
+            color: white;
+            display: none;
+        }
+        
+        .progress-container {
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #009973;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .score-display {
+            background-color: #e6a817;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .nav-bar {
+            background-color: #000;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        
+        .nav-item {
+            color: #fff;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #e6a817;
+        }
+        
+        .result-container {
+            text-align: center;
+            display: none;
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .result-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .result-score {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #009973;
+        }
+        
+        .restart-btn {
+            background-color: #e6a817;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+        <div class="container">
+            <div class="header">
+                <h1>Quiz Tajwid</h1>
+                <p>Uji pengetahuan Anda tentang ilmu tajwid dasar</p>
+            </div>
+            
+            <div id="quiz-container" class="quiz-container">
+                <div class="quiz-meta">
+                    <div class="question-counter">Pertanyaan <span id="current-question">1</span> dari <span id="total-questions">10</span></div>
+                    <div class="score-display">Skor: <span id="score">0</span></div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                
+                <div class="question" id="question">Apa hukum bacaan pada kata berikut?</div>
+                
+                <div class="arabic-text" id="arabic-text">مِنْ رَبِّهِمْ</div>
+                
+                <div class="options" id="options">
+                    <div class="option" data-correct="true" onclick="selectOption(this)">Idgham Bila Ghunnah</div>
+                    <div class="option" onclick="selectOption(this)">Ikhfa Syafawi</div>
+                    <div class="option" onclick="selectOption(this)">Idgham Mimi</div>
+                    <div class="option" onclick="selectOption(this)">Izhar Syafawi</div>
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+                
+                <div class="buttons">
+                    <button class="check-btn" id="check-btn" onclick="checkAnswer()">Periksa Jawaban</button>
+                    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Pertanyaan Berikutnya</button>
+                </div>
+            </div>
+            
+            <div id="result-container" class="result-container">
+                <div class="result-icon">🏆</div>
+                <div class="result-score">Skor Akhir: <span id="final-score">0</span>/10</div>
+                <p>Selamat! Anda telah menyelesaikan quiz tajwid.</p>
+                <button class="restart-btn" onclick="restartQuiz()">Mulai Lagi</button>
+            </div>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item" onclick="location.href='index.html'">
+                <div class="nav-icon">🏠</div>
+                <p>Beranda</p>
+            </div>
+            <div class="nav-item" onclick="location.href='hadith.html'">
+                <div class="nav-icon">🕌</div>
+                <p>Hadist</p>
+            </div>
+        </div>
+    
+    <script>
+        // Updated Quiz data based on the image
+        const quizData = [
+            // Hukum Tajwid Panjang
+            {
+                question: "Apa hukum bacaan pada kata berikut? (Hukum Panjang)",
+                arabicText: "مَنْ يَقُولُ",
+                options: [
+                    "Idgham Bi Ghunnah",
+                    "Ikhfa Haqiqi",
+                    "Iqlab",
+                    "Izhar Halqi"
+                ],
+                correct: 0,
+                explanation: "Hukum bacaan pada kata tersebut adalah Idgham Bi Ghunnah (dengung) karena nun mati bertemu dengan huruf Ya (dari kelompok ي ن م و)."
+            },
+            {
+                question: "Apa hukum bacaan pada kata berikut? (Hukum Panjang)",
+                arabicText: "مِنْ غَفُورٍ",
+                options: [
+                    "Ikhfa Haqiqi",
+                    "Idgham Bi Ghunnah",
+                    "Izhar Halqi",
+                    "Iqlab"
+                ],
+                correct: 0,
+                explanation: "Hukum bacaan pada kata tersebut adalah Ikhfa Haqiqi (samar-samar) karena nun mati bertemu dengan huruf Ghain (dari kelompok ت ث ج د ذ ز س ش ص ض ط ظ ف ق ك)."
+            },
+            {
+                question: "Apa hukum bacaan pada kata berikut? (Hukum Panjang)",
+                arabicText: "مِنْ بَعْدِ",
+                options: [
+                    "Iqlab",
+                    "Idgham Bi Ghunnah",
+                    "Ikhfa Haqiqi",
+                    "Izhar Halqi"
+                ],
+                correct: 0,
+                explanation: "Hukum bacaan pada kata tersebut adalah Iqlab (mengganti) karena nun mati bertemu dengan huruf Ba, sehingga dibaca menjadi mim."
+            },
+            
+            // Hukum Tajwid Pendek
+            {
+                question: "Apa hukum bacaan pada kata berikut? (Hukum Pendek)",
+                arabicText: "مِنْ رَبِّهِمْ",
+                options: [
+                    "Idgham Bila Ghunnah",
+                    "Izhar Halqi",
+                    "Ikhfa Haqiqi",
+                    "Iqlab"
+                ],
+                correct: 0,
+                explanation: "Hukum bacaan pada kata tersebut adalah Idgham Bila Ghunnah (tanpa dengung) karena nun mati bertemu dengan huruf Ra atau Lam."
+            },
+            {
+                question: "Apa hukum bacaan pada kata berikut? (Hukum Pendek)",
+                arabicText: "مِنْ حَكِيمٍ",
+                options: [
+                    "Izhar Halqi",
+                    "Idgham Bila Ghunnah",
+                    "Ikhfa Haqiqi",
+                    "Iqlab"
+                ],
+                correct: 0,
+                explanation: "Hukum bacaan pada kata tersebut adalah Izhar Halqi (jelas) karena nun mati bertemu dengan huruf ح خ ع غ ه ء."
+            },
+            
+            // Hukum Qalqalah
+            {
+                question: "Apa hukum bacaan pada huruf berikut? (Hukum Qalqalah)",
+                arabicText: "قُطْبُ جَدٍّ",
+                options: [
+                    "Qalqalah Sughra",
+                    "Qalqalah Kubra",
+                    "Ghunnah",
+                    "Ikhfa"
+                ],
+                correct: 0,
+                explanation: "Hukum bacaan pada kata tersebut adalah Qalqalah Sughra (kecil) karena huruf qalqalah (ق ط ب ج د) mati di tengah kata."
+            },
+            {
+                question: "Apa hukum bacaan pada huruf berikut? (Hukum Qalqalah)",
+                arabicText: "خَلَقَ",
+                options: [
+                    "Tidak ada qalqalah",
+                    "Qalqalah Sughra",
+                    "Qalqalah Kubra",
+                    "Ghunnah"
+                ],
+                correct: 2,
+                explanation: "Hukum bacaan pada kata tersebut adalah Qalqalah Kubra (besar) karena huruf qalqalah mati di akhir ayat/waqof."
+            },
+            
+            // Hukum Mim Mati
+            {
+                question: "Apa hukum bacaan pada kata berikut? (Hukum Mim Mati)",
+                arabicText: "هُمْ بِهِ",
+                options: [
+                    "Idgham Mimi",
+                    "Ikhfa Syafawi",
+                    "Izhar Syafawi",
+                    "Iqlab"
+                ],
+                correct: 0,
+                explanation: "Hukum bacaan pada kata tersebut adalah Idgham Mimi karena mim mati bertemu dengan mim, sehingga dimasukkan/dilebur."
+            },
+            {
+                question: "Apa hukum bacaan pada kata berikut? (Hukum Mim Mati)",
+                arabicText: "هُمْ فِيهِ",
+                options: [
+                    "Izhar Syafawi",
+                    "Ikhfa Syafawi",
+                    "Idgham Mimi",
+                    "Iqlab"
+                ],
+                correct: 1,
+                explanation: "Hukum bacaan pada kata tersebut adalah Ikhfa Syafawi (samar bibir) karena mim mati bertemu dengan huruf Ba."
+            },
+            
+            // Ghunnah
+            {
+                question: "Apa hukum bacaan pada kata berikut? (Ghunnah)",
+                arabicText: "إِنَّ",
+                options: [
+                    "Ghunnah (dengung)",
+                    "Izhar",
+                    "Ikhfa",
+                    "Idgham"
+                ],
+                correct: 0,
+                explanation: "Hukum bacaan pada kata tersebut adalah Ghunnah (dengung) karena ada nun tasydid atau mim tasydid."
+            }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+        
+        // Initialize quiz
+        function initQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+            document.getElementById('score').textContent = score;
+            document.getElementById('total-questions').textContent = quizData.length;
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('result-container').style.display = 'none';
+        }
+        
+        // Load question
+        function loadQuestion() {
+            const q = quizData[currentQuestion];
+            document.getElementById('current-question').textContent = currentQuestion + 1;
+            document.getElementById('question').textContent = q.question;
+            document.getElementById('arabic-text').textContent = q.arabicText;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.correct = index === q.correct;
+                optionElement.onclick = function() { selectOption(this); };
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Reset UI
+            selectedOption = null;
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('check-btn').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('progress-bar').style.width = (currentQuestion / quizData.length) * 100 + '%';
+        }
+        
+        // Select option
+        function selectOption(element) {
+            // Remove selected class from all options
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            selectedOption = element;
+        }
+        
+        // Check answer
+        function checkAnswer() {
+            if (selectedOption === null) {
+                alert('Silakan pilih jawaban terlebih dahulu!');
+                return;
+            }
+            
+            const isCorrect = selectedOption.dataset.correct === 'true';
+            const feedbackElement = document.getElementById('feedback');
+            
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                feedbackElement.className = 'feedback correct';
+                feedbackElement.textContent = `Benar! ${quizData[currentQuestion].explanation}`;
+                score++;
+                document.getElementById('score').textContent = score;
+            } else {
+                selectedOption.classList.add('incorrect');
+                
+                // Highlight correct answer
+                document.querySelectorAll('.option').forEach(option => {
+                    if (option.dataset.correct === 'true') {
+                        option.classList.add('correct');
+                    }
+                });
+                
+                feedbackElement.className = 'feedback incorrect';
+                feedbackElement.textContent = "Salah. " + quizData[currentQuestion].explanation;
+            }
+            
+            feedbackElement.style.display = 'block';
+            document.getElementById('check-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'block';
+            
+            // Disable options
+            document.querySelectorAll('.option').forEach(option => {
+                option.onclick = null;
+                option.style.cursor = 'default';
+            });
+        }
+        
+        // Next question
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+        
+        // Show quiz result
+        function showResult() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+        }
+        
+        // Restart quiz
+        function restartQuiz() {
+            initQuiz();
+        }
+        
+        // Initialize quiz when page loads
+        window.onload = initQuiz;
+        // Update progress bar
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercentage = (currentQuestion / quizData.length) * 100;
+            progressBar.style.width = progressPercentage + '%';
+        }
+        // Update progress bar
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercentage = (currentQuestion / quizData.length) * 100;
+            progressBar.style.width = progressPercentage + '%';
+        }
+    </script>
+</body>
+</html>

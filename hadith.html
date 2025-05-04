@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koleksi Hadist</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #1d604d;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+        .header p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            text-align: center;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: calc(100% - 70px);
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .search-button {
+            width: 50px;
+            padding: 12px;
+            background-color: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .category {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            background-color: white;
+            font-size: 14px;
+        }
+        .category.active {
+            background-color: #e67e22;
+            color: white;
+            border-color: #e67e22;
+        }
+        .progress-bar {
+            height: 5px;
+            background-color: #e0e0e0;
+            margin-bottom: 20px;
+            border-radius: 3px;
+            position: relative;
+        }
+        .progress {
+            height: 100%;
+            width: 50%;
+            background-color: #1d604d;
+            border-radius: 3px;
+        }
+        .hadist-list {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .hadist-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .hadist-item:last-child {
+            border-bottom: none;
+        }
+        .hadist-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .hadist-text {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .hadist-source {
+            color: #777;
+            font-size: 14px;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .action-button {
+            padding: 8px 12px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        .page-item {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: white;
+        }
+        .page-item.active {
+            background-color: #1d604d;
+            color: white;
+            border-color: #1d604d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Koleksi Hadist</h1>
+            <p>Rasulullah SAW bersabda: "Aku tinggalkan dua perkara, kalian tidak akan sesat selama berpegang pada keduanya: Kitabullah dan Sunnah Nabi-Nya" (HR. Malik)</p>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Cari hadist... (contoh: niat, shalat, sabar)" id="searchInput">
+            <button class="search-button" onclick="searchHadist()">🔍</button>
+        </div>
+        
+        <div class="categories">
+            <div class="category active" onclick="filterCategory(this, 'semua')">Semua</div>
+            <div class="category" onclick="filterCategory(this, 'akhlak')">Akhlak</div>
+            <div class="category" onclick="filterCategory(this, 'ibadah')">Ibadah</div>
+            <div class="category" onclick="filterCategory(this, 'muamalah')">Muamalah</div>
+            <div class="category" onclick="filterCategory(this, 'aqidah')">Aqidah</div>
+            <div class="category" onclick="filterCategory(this, 'adab')">Adab</div>
+            <div class="category" onclick="filterCategory(this, 'ilmu')">Ilmu</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-button" onclick="sortHadist()">
+                <span>🔄</span> Urutkan
+            </button>
+            <button class="action-button" onclick="toggleFavorite()">
+                <span>⭐</span> Favorit
+            </button>
+        </div>
+        
+        <div class="hadist-list" id="hadistList">
+            <div class="hadist-item">
+                <div class="hadist-title">Niat Dalam Beramal</div>
+                <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+                    عَنْ أَمِيرِ الْمُؤْمِنِينَ أَبِي حَفْصٍ عُمَرَ بْنِ الْخَطَّابِ رَضِيَ اللهُ عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللَّهِ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ يَقُولُ: « إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إِلَى اللَّهِ وَرَسُولِهِ فَهِجْرَتُهُ إِلَى اللَّهِ وَرَسُولِهِ، وَمَنْ كَانَتْ هِجْرَتُهُ لِدُنْيَا يُصِيبُهَا أَوْ امْرَأَةٍ يَنْكِحُهَا فَهِجْرَتُهُ إِلَى مَا هَاجَرَ إِلَيْهِ »
+                </div>
+                <div class="hadist-text">Dari Umar bin Khattab radhiyallahu 'anhu, bahwa Rasulullah shallallahu 'alaihi wa sallam bersabda, "Sesungguhnya setiap amalan tergantung pada niatnya. Dan sesungguhnya setiap orang akan mendapatkan sesuai dengan apa yang diniatkannya. Maka barangsiapa yang hijrahnya karena Allah dan Rasul-Nya, maka hijrahnya untuk Allah dan Rasul-Nya. Dan barangsiapa yang hijrahnya karena dunia yang ingin diraihnya atau karena wanita yang ingin dinikahinya, maka hijrahnya kepada apa yang diniatkannya tersebut."</div>
+                <div class="hadist-source">HR. Bukhari dan Muslim</div>
+            </div>
+            
+            <div class="hadist-item">
+                <div class="hadist-title">Keutamaan Menuntut Ilmu</div>
+                <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+                    عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ أَنَّ رَسُولَ اللهِ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ قَالَ: « مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ »
+                </div>
+                <div class="hadist-text">Dari Abu Hurairah radhiyallahu 'anhu, Rasulullah shallallahu 'alaihi wa sallam bersabda, "Barangsiapa menempuh jalan untuk mencari ilmu, maka Allah akan memudahkan baginya jalan menuju surga."</div>
+                <div class="hadist-source">HR. Muslim</div>
+            </div>
+            
+            <div class="hadist-item">
+                <div class="hadist-title">Pentingnya Shalat</div>
+                <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+                    عَنِ ابْنِ عُمَرَ رَضِيَ اللهُ عَنْهُما قَالَ: قَالَ رَسُولُ اللهِ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ: « بُنِيَ الإِسْلاَمُ عَلَى خَمْسٍ: شَهَادَةِ أَنْ لاَ إِلَهَ إِلاَّ اللهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللهِ، وَإِقَامِ الصَّلاَةِ، وَإِيتَاءِ الزَّكَاةِ، وَالْحَجِّ، وَصَوْمِ رَمَضَانَ »
+                </div>
+                <div class="hadist-text">Dari Abdullah bin Umar radhiyallahu 'anhuma, bahwa Rasulullah shallallahu 'alaihi wa sallam bersabda, "Islam dibangun di atas lima perkara: bersaksi bahwa tidak ada ilah (sesembahan) yang berhak disembah melainkan Allah dan Muhammad adalah utusan Allah, mendirikan shalat, menunaikan zakat, menunaikan haji, dan berpuasa di bulan Ramadhan."</div>
+                <div class="hadist-source">HR. Bukhari dan Muslim</div>
+            </div>
+            
+            <div class="hadist-item">
+                <div class="hadist-title">Keutamaan Sabar</div>
+                <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+                    عَنْ أَبِي سَعِيدٍ الْخُدْرِيِّ رَضِيَ اللهُ عَنْهُ أَنَّ رَسُولَ اللهِ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ قَالَ: « وَمَنْ يَتَصَبَّرْ يُصَبِّرْهُ اللَّهُ، وَمَا أُعْطِيَ أَحَدٌ عَطَاءً خَيْرًا وَأَوْسَعَ مِنَ الصَّبْرِ »
+                </div>
+                <div class="hadist-text">Dari Abu Sa'id Al-Khudri radhiyallahu 'anhu, Rasulullah shallallahu 'alaihi wa sallam bersabda, "Siapa yang bersabar maka Allah akan membuatnya sabar, dan tidak ada pemberian yang lebih baik dan luas yang diberikan kepada seseorang melebihi kesabaran."</div>
+                <div class="hadist-source">HR. Bukhari dan Muslim</div>
+            </div>
+            
+            <div class="hadist-item">
+                <div class="hadist-title">Menjaga Lisan</div>
+                <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+                    عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ أَنَّ رَسُولَ اللهِ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ قَالَ: « مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ »
+                </div>
+                <div class="hadist-text">Dari Abu Hurairah radhiyallahu 'anhu, Rasulullah shallallahu 'alaihi wa sallam bersabda, "Barangsiapa yang beriman kepada Allah dan hari akhir, hendaklah dia berkata yang baik atau diam."</div>
+                <div class="hadist-source">HR. Bukhari dan Muslim</div>
+            </div>
+    
+        <div class="hadist-item">
+            <div class="hadist-title">Keutamaan Puasa</div>
+            <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+                الصِّيَامُ جُنَّةٌ فَلَا يَرْفُثْ وَلَا يَجْهَلْ وَإِنْ امْرُؤٌ قَاتَلَهُ أَوْ شَاتَمَهُ فَلْيَقُلْ إِنِّي صَائِمٌ مَرَّتَيْنِ
+            </div>
+            <div class="hadist-text">"Puasa itu adalah perisai, maka janganlah berkata-kata kotor dan berbuat bodoh. Apabila ada seseorang yang mengajaknya berkelahi atau mencacinya, maka katakanlah aku sedang berpuasa (diucapkan dua kali). Demi Dzat yang jiwaku berada di tangan-Nya, sungguh bau mulut orang yang berpuasa lebih harum di sisi Allah daripada bau minyak kasturi. Dia rela meninggalkan makanan, minuman dan nafsu syahwatnya karena Aku. Puasa itu untuk-Ku dan Aku sendiri yang akan membalasnya. Satu kebaikan dibalas dengan sepuluh kali lipatnya."</div>
+            <div class="hadist-source">HR. Bukhari</div>
+        </div>
+
+        <div class="hadist-item">
+                <div class="hadist-title">Memuliakan Tamu</div>
+                <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+                    مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيُكْرِمْ ضَيْفَهُ جَائِزَتُهُ يَوْمٌ وَلَيْلَةٌ وَالضِّيَافَةُ ثَلَاثَةُ أَيَّامٍ وَمَا بَعْدَ  ذَلِكَ فَهُوَ صَدَقَةٌ
+                </div>
+                <div class="hadist-text">"Barangsiapa beriman kepada Allah dan hari Akhir, hendaklah ia memuliakan tamunya, dengan memberikan hadiah yaitu pada siang dan malam harinya, dan menjamunya selama tiga hari, dan apa yang setelah itu maka itu adalah sedekah. Dan tidak halal baginya untuk tinggal di rumah saudaranya hingga membuatnya berdosa."</div>
+                <div class="hadist-source">HR. Bukhari</div>
+        </div>
+
+        <div class="hadist-item">
+            <div class="hadist-title">Keutamaan Sedekah</div>
+            <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+                مَا تَصَدَّقَ أَحَدٌ بِصَدَقَةٍ مِنْ طَيِّبٍ وَلَا يَقْبَلُ اللَّهُ إِلَّا الطَّيِّبَ إِلَّا أَخَذَهَا الرَّحْمَنُ بِيَمِينِهِ
+            </div>
+            <div class="hadist-text">"Tidaklah seseorang bersedekah dengan sesuatu yang baik (dari usaha yang baik) dan Allah tidak menerima kecuali yang baik, melainkan Allah akan mengambilnya dengan tangan kanan-Nya, sekalipun hanya sebiji kurma maka akan berkembang di telapak tangan Allah hingga menjadi lebih besar dari gunung sebagaimana seorang dari kalian memelihara anak kuda atau anak unta."
+            </div>
+            <div class="hadist-source">HR. Bukhari</div>
+        </div>
+
+    <div class="hadist-item">
+        <div class="hadist-title">Akhlak Nabi Muhammad SAW</div>
+        <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+            خَدَمْتُ النَّبِيَّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ عَشْرَ سِنِينَ فَمَا قَالَ لِي أُفٍّ قَطُّ وَمَا قَالَ لِشَيْءٍ فَعَلْتُهُ لِمَ فَعَلْتَ كَذَا وَهَلَّا فَعَلْتَ كَذَا
+        </div>
+        <div class="hadist-text">"Aku menjadi pelayan Nabi shallallahu 'alaihi wasallam selama sepuluh tahun, dan beliau tidak pernah mengatakan 'ah' kepadaku sama sekali. Beliau juga tidak pernah mengatakan terhadap sesuatu yang aku lakukan, 'Mengapa kamu melakukan ini?' Dan tidak pula mengatakan terhadap sesuatu yang belum aku lakukan, 'Mengapa kamu tidak melakukan ini?'"
+        </div>
+        <div class="hadist-source">HR. Bukhari</div>
+    </div>
+        
+    <div class="hadist-item">
+        <div class="hadist-title">Keutamaan Menuntut Ilmu</div>
+        <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+            مَنْ يُرِدْ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ
+        </div>
+        <div class="hadist-text">"Barangsiapa yang Allah kehendaki mendapatkan seluruh kebaikan, maka Allah akan memahamkan dia tentang agama."
+        </div>
+        <div class="hadist-source">HR. Bukhari</div>
+</div>
+
+    <div class="hadist-item">
+        <div class="hadist-title">Halal dan Haram dalam Islam</div>
+        <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+            الْحَلَالُ بَيِّنٌ وَالْحَرَامُ بَيِّنٌ وَبَيْنَهُمَا مُشْتَبِهَاتٌ لَا يَعْلَمُهُنَّ كَثِيرٌ مِنْ النَّاسِ فَمَنْ اتَّقَى الشُّبُهَاتِ اسْتَبْرَأَ لِدِينِهِ وَعِرْضِهِ
+        </div>
+        <div class="hadist-text">"Halal itu jelas dan haram itu jelas, di antara keduanya terdapat perkara syubhat yang tidak diketahui oleh banyak orang. Barangsiapa menjaga dirinya dari perkara syubhat, maka ia telah menyelamatkan agama dan kehormatannya. Barangsiapa terjerumus dalam perkara syubhat, maka ia telah terjerumus pada perkara haram. Seperti penggembala yang berada di dekat pagar larangan, dikhawatirkan ia akan masuk ke dalamnya. Ketahuilah, setiap raja memiliki larangan, dan larangan Allah adalah apa yang Dia haramkan. Ketahuilah, bahwa dalam setiap tubuh ada segumpal darah yang apabila baik maka baiklah seluruh tubuhnya, dan apabila rusak maka rusaklah seluruh tubuhnya. Ketahuilah, segumpal darah itu adalah hati."</div>
+        <div class="hadist-source">HR. Muslim</div>
+    </div>
+
+    <div class="hadist-item">
+        <div class="hadist-title">Larangan Melaknat Orang Tua</div>
+        <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+            إِنَّ مِنْ أَكْبَرِ الْكَبَائِرِ أَنْ يَلْعَنَ الرَّجُلُ وَالِدَيْهِ
+        </div>
+        <div class="hadist-text">"Sesungguhnya termasuk dosa besar adalah seseorang melaknat kedua orang tuanya." Beliau ditanya, "Wahai Rasulullah, bagaimana mungkin seseorang melaknat kedua orang tuanya?" Beliau menjawab: "Yaitu seseorang yang mencela ayah orang lain, kemudian orang tersebut membalas mencela ayah dan ibunya."</div>
+        <div class="hadist-source">HR. Muslim</div>
+    </div>
+
+    <div class="hadist-item">
+        <div class="hadist-title">Tiga Tingkatan Agaama</div>
+        <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+            صحيح مسلم ٩: حَدَّثَنِي أَبُو خَيْثَمَةَ زُهَيْرُ بْنُ حَرْبٍ حَدَّثَنَا وَكِيعٌ عَنْ كَهْمَسٍ عَنْ عَبْدِ اللَّهِ بْنِ بُرَيْدَةَ عَنْ يَحْيَى بْنِ يَعْمَرَ ح و حَدَّثَنَا عُبَيْدُ اللَّهِ بْنُ مُعَاذٍ الْعَنْبَرِيُّ وَهَذَا حَدِيثُهُ حَدَّثَنَا أَبِي حَدَّثَنَا كَهْمَسٌ عَنْ ابْنِ بُرَيْدَةَ عَنْ يَحْيَى بْنِ يَعْمَرَ قَالَ كَانَ أَوَّلَ مَنْ قَالَ فِي الْقَدَرِ بِالْبَصْرَةِ مَعْبَدٌ الْجُهَنِيُّ فَانْطَلَقْتُ أَنَا وَحُمَيْدُ بْنُ عَبْدِ الرَّحْمَنِ الْحِمْيَرِيُّ حَاجَّيْنِ أَوْ مُعْتَمِرَيْنِ فَقُلْنَا لَوْ لَقِينَا أَحَدًا مِنْ أَصْحَابِ رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ فَسَأَلْنَاهُ عَمَّا يَقُولُ هَؤُلَاءِ فِي الْقَدَرِ فَوُفِّقَ لَنَا عَبْدُ اللَّهِ بْنُ عُمَرَ بْنِ الْخَطَّابِ دَاخِلًا الْمَسْجِدَ فَاكْتَنَفْتُهُ أَنَا وَصَاحِبِي أَحَدُنَا عَنْ يَمِينِهِ وَالْآخَرُ عَنْ شِمَالِهِ فَظَنَنْتُ أَنَّ صَاحِبِي سَيَكِلُ الْكَلَامَ إِلَيَّ فَقُلْتُ أَبَا عَبْدِ الرَّحْمَنِ إِنَّهُ قَدْ ظَهَرَ قِبَلَنَا نَاسٌ يَقْرَءُونَ الْقُرْآنَ وَيَتَقَفَّرُونَ الْعِلْمَ وَذَكَرَ مِنْ شَأْنِهِمْ وَأَنَّهُمْ يَزْعُمُونَ أَنْ لَا قَدَرَ وَأَنَّ الْأَمْرَ أُنُفٌ قَالَ فَإِذَا لَقِيتَ أُولَئِكَ فَأَخْبِرْهُمْ أَنِّي بَرِيءٌ مِنْهُمْ وَأَنَّهُمْ بُرَآءُ مِنِّي وَالَّذِي يَحْلِفُ بِهِ عَبْدُ اللَّهِ بْنُ عُمَرَ لَوْ أَنَّ لِأَحَدِهِمْ مِثْلَ أُحُدٍ ذَهَبًا فَأَنْفَقَهُ مَا قَبِلَ اللَّهُ مِنْهُ حَتَّى يُؤْمِنَ بِالْقَدَرِ ثُمَّ قَالَ حَدَّثَنِي أَبِي عُمَرُ بْنُ الْخَطَّابِ قَالَ بَيْنَمَا نَحْنُ عِنْدَ رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ ذَاتَ يَوْمٍ إِذْ طَلَعَ عَلَيْنَا رَجُلٌ شَدِيدُ بَيَاضِ الثِّيَابِ شَدِيدُ سَوَادِ الشَّعَرِ لَا يُرَى عَلَيْهِ أَثَرُ السَّفَرِ وَلَا يَعْرِفُهُ مِنَّا أَحَدٌ حَتَّى جَلَسَ إِلَى النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ فَأَسْنَدَ رُكْبَتَيْهِ إِلَى رُكْبَتَيْهِ وَوَضَعَ كَفَّيْهِ عَلَى فَخِذَيْهِ وَقَالَ يَا مُحَمَّدُ أَخْبِرْنِي عَنْ الْإِسْلَامِ فَقَالَ رَسُولُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ الْإِسْلَامُ أَنْ تَشْهَدَ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ وَتُقِيمَ الصَّلَاةَ وَتُؤْتِيَ الزَّكَاةَ وَتَصُومَ رَمَضَانَ وَتَحُجَّ الْبَيْتَ إِنْ اسْتَطَعْتَ إِلَيْهِ سَبِيلًا قَالَ صَدَقْتَ قَالَ فَعَجِبْنَا لَهُ يَسْأَلُهُ وَيُصَدِّقُهُ قَالَ فَأَخْبِرْنِي عَنْ الْإِيمَانِ قَالَ أَنْ تُؤْمِنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ وَالْيَوْمِ الْآخِرِ وَتُؤْمِنَ بِالْقَدَرِ خَيْرِهِ وَشَرِّهِ قَالَ صَدَقْتَ قَالَ فَأَخْبِرْنِي عَنْ الْإِحْسَانِ قَالَ أَنْ تَعْبُدَ اللَّهَ كَأَنَّكَ تَرَاهُ فَإِنْ لَمْ تَكُنْ تَرَاهُ فَإِنَّهُ يَرَاكَ قَالَ فَأَخْبِرْنِي عَنْ السَّاعَةِ قَالَ مَا الْمَسْئُولُ عَنْهَا بِأَعْلَمَ مِنْ السَّائِلِ قَالَ فَأَخْبِرْنِي عَنْ أَمَارَتِهَا قَالَ أَنْ تَلِدَ الْأَمَةُ رَبَّتَهَا وَأَنْ تَرَى الْحُفَاةَ الْعُرَاةَ الْعَالَةَ رِعَاءَ الشَّاءِ يَتَطَاوَلُونَ فِي الْبُنْيَانِ قَالَ ثُمَّ انْطَلَقَ فَلَبِثْتُ مَلِيًّا ثُمَّ قَالَ لِي يَا عُمَرُ أَتَدْرِي مَنْ السَّائِلُ قُلْتُ اللَّهُ وَرَسُولُهُ أَعْلَمُ قَالَ فَإِنَّهُ جِبْرِيلُ أَتَاكُمْ يُعَلِّمُكُمْ دِينَكُمْ حَدَّثَنِي مُحَمَّدُ بْنُ عُبَيْدٍ الْغُبَرِيُّ وَأَبُو كَامِلٍ الْجَحْدَرِيُّ وَأَحْمَدُ بْنُ عَبْدَةَ قَالُوا حَدَّثَنَا حَمَّادُ بْنُ زَيْدٍ عَنْ مَطَرٍ الْوَرَّاقِ عَنْ عَبْدِ اللَّهِ بْنِ بُرَيْدَةَ عَنْ يَحْيَى بْنِ يَعْمَرَ قَالَ لَمَّا تَكَلَّمَ مَعْبَدٌ بِمَا تَكَلَّمَ بِهِ فِي شَأْنِ الْقَدَرِ أَنْكَرْنَا ذَلِكَ قَالَ فَحَجَجْتُ أَنَا وَحُمَيْدُ بْنُ عَبْدِ الرَّحْمَنِ الْحِمْيَرِيُّ حَجَّةً وَسَاقُوا الْحَدِيثَ بِمَعْنَى حَدِيثِ كَهْمَسٍ وَإِسْنَادِهِ وَفِيهِ بَعْضُ زِيَادَةٍ وَنُقْصَانُ أَحْرُفٍ و حَدَّثَنِي مُحَمَّدُ بْنُ حَاتِمٍ حَدَّثَنَا يَحْيَى بْنُ سَعِيدٍ الْقَطَّانُ حَدَّثَنَا عُثْمَانُ بْنُ غِيَاثٍ حَدَّثَنَا عَبْدُ اللَّهِ بْنُ بُرَيْدَةَ عَنْ يَحْيَى بْنِ يَعْمَرَ وَحُمَيْدِ بْنِ عَبْدِ الرَّحْمَنِ قَالَا لَقِينَا عَبْدَ اللَّهِ بْنَ عُمَرَ فَذَكَرْنَا الْقَدَرَ وَمَا يَقُولُونَ فِيهِ فَاقْتَصَّ الْحَدِيثَ كَنَحْوِ حَدِيثِهِمْ عَنْ عُمَرَ رَضِيَ اللَّهُ عَنْهُ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ وَفِيهِ شَيْءٌ مِنْ زِيَادَةٍ وَقَدْ نَقَصَ مِنْهُ شَيْئًا و حَدَّثَنِي حَجَّاجُ بْنُ الشَّاعِرِ حَدَّثَنَا يُونُسُ بْنُ مُحَمَّدٍ حَدَّثَنَا الْمُعْتَمِرُ عَنْ أَبِيهِ عَنْ يَحْيَى بْنِ يَعْمَرَ عَنْ ابْنِ عُمَرَ عَنْ عُمَرَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ بِنَحْوِ حَدِيثِهِمْ
+        </div>
+        <div class="hadist-text">Shahih Muslim 9: Telah menceritakan kepadaku [Abu Khaitsamah Zuhair bin Harb] telah menceritakan kepada kami [Waki'] dari [Kahmas] dari [Abdullah bin Buraidah] dari [Yahya bin Ya'mar]. (dalam riwayat lain disebutkan) Dan telah menceritakan kepada kami [Ubaidullah bin Mu'adz Al-'Anbari] dan ini haditsnya, telah menceritakan kepada kami [Bapakku] telah menceritakan kepada kami [Kahmas] dari [Ibnu Buraidah] dari [Yahya bin Ya'mar] dia berkata: "Orang yang pertama kali membahas takdir di Bashrah adalah Ma'bad al-Juhani, maka aku dan Humaid bin Abdurrahman Al Himyari bertolak haji atau umrah, maka kami berkata: 'Seandainya kami bertemu dengan salah seorang sahabat Rasulullah shallallahu 'alaihi wa sallam, maka kami akan bertanya kepadanya tentang sesuatu yang mereka katakan berkaitan dengan takdir.' Maka [Abdullah bin Umar] diberikan taufik (oleh Allah) untuk kami, sedangkan dia masuk masjid. Lalu aku dan temanku menghadangnya. Salah seorang dari kami di sebelah kanannya dan yang lain di sebelah kirinya. Lalu aku mengira bahwa temanku akan mewakilkan pembicaraan kepadaku, maka aku berkata: 'Wahai Abu Abdurrahman, sesungguhnya nampak di hadapan kami suatu kaum membaca Al Qur'an dan mencari ilmu lalu mengklaim bahwa tidak ada takdir, dan perkaranya adalah baru (tidak didahului oleh takdir dan ilmu Allah).' Maka [Abdullah bin Umar] menjawab: 'Apabila kamu bertemu orang-orang tersebut, maka kabarkanlah kepada mereka bahwa saya berlepas diri dari mereka, dan bahwa mereka berlepas diri dariku. Dan demi Dzat yang mana hamba Allah bersumpah dengan-Nya, kalau seandainya salah seorang dari kalian menafkahkan emas seperti gunung Uhud, niscaya sedekahnya tidak akan diterima hingga dia beriman kepada takdir baik dan buruk.' Dia berkata: 'Kemudian dia mulai menceritakan hadits seraya berkata: ['Umar bin Al Khaththab] berkata: 'Dahulu kami pernah berada di sisi Rasulullah shallallahu 'alaihi wa sallam, lalu datanglah seorang laki-laki yang bajunya sangat putih, rambutnya sangat hitam, tidak tampak padanya bekas-bekas perjalanan. Tidak seorang pun dari kami mengenalnya, hingga dia mendatangi Nabi shallallahu 'alaihi wa salam lalu menyandarkan lututnya pada lutut Nabi shallallahu 'alaihi wa sallam, kemudian ia berkata: 'Wahai Muhammad, kabarkanlah kepadaku tentang Islam?' Rasulullah shallallahu 'alaihi wa sallam menjawab: "Kesaksian bahwa tidak ada tuhan (yang berhak disembah) selain Allah dan bahwa Muhammad adalah hamba dan utusan-Nya, mendirikan shalat, menunaikan zakat, dan puasa Ramadlan, serta haji ke Baitullah jika kamu mampu bepergian kepadanya.' Dia berkata: 'Kamu benar.' Umar berkata: 'Maka kami kaget terhadapnya karena dia menanyakannya dan membenarkannya.' Dia bertanya lagi: 'Kabarkanlah kepadaku tentang iman itu?' Beliau menjawab: 'Kamu beriman kepada Allah, malaikat-malaikat-Nya, kitab-kitab-Nya, para Rasul-Nya, hari akhir, dan takdir baik dan buruk.' Dia berkata: 'Kamu benar.' Dia bertanya: 'Kabarkanlah kepadaku tentang ihsan itu?' Beliau menjawab: 'Kamu menyembah Allah seakan-akan kamu melihat-Nya, maka jika kamu tidak melihat-Nya, maka sesungguhnya Dia melihatmu.' Dia bertanya lagi: 'Kapankah hari akhir itu?' Beliau menjawab: 'Tidaklah orang yang ditanya itu lebih mengetahui daripada orang yang bertanya.' Dia bertanya: 'Lalu kabarkanlah kepadaku tentang tanda-tandanya?' Beliau menjawab: 'Apabila seorang budak melahirkan (anak) tuan-Nya, dan kamu melihat orang yang tidak beralas kaki, telanjang, miskin, penggembala kambing, namun bermegah-megahan dalam membangun bangunan.' Kemudian dia bertolak pergi. Maka aku tetap saja heran kemudian beliau berkata: 'Wahai Umar, apakah kamu tahu siapa penanya tersebut?' Aku menjawab: 'Allah dan Rasul-Nya lebih tahu.' Beliau bersabda: 'Dia adalah Jibril, dia mendatangi kalian untuk mengajarkan kepada kalian agama kalian.'" Telah menceritakan kepada kami [Muhammad bin Ubaid Al Ghubari] dan [Abu Kamil Al Jahdari] serta [Ahmad bin Abdah] mereka berkata: telah menceritakan kepada kami [Hammad bin Yazid] dari [Mathar Al Warraq] dari [Abdullah bin Buraidah] dari [Yahya bin Ya'mar] dia berkata: 'Ketika Ma'bad berkata dengan sesuatu yang dia bicarakan tentang masalah takdir, maka kami mengingkari hal tersebut.' Dia melanjutkan: 'Lalu aku melakukan haji bersama Humaid bin Abdurrahman Al Himyari.' Lalu mereka menyebutkan hadits dengan makna hadits Kahmas. Di dalamnya terdapat sebagian tambahan dan kekurangan huruf. Dan telah menceritakan kepada kami [Muhammad bin Hatim] telah menceritakan kepada kami [Yahya bin Sa'id Al Qaththan] telah menceritakan kepada kami [Utsman bin Ghiyats] telah menceritakan kepada kami [Abdullah bin Buraidah] dari [Yahya bin Ya'mar] dan [Humaid bin Abdurrahman] keduanya berkata: "Kami bertemu [Abdullah bin Umar], lalu kami menyebutkan tentang takdir dan pendapat mereka tentangnya, lalu dia mengisahkan hadits tersebut sebagaimana hadits mereka dari [Umar] radliyalllahu 'anhuma dari Nabi shallallahu 'alaihi wa sallam, dan di dalamnya terdapat suatu tambahan dan pengurangan." Dan telah menceritakan kepada kami [Hajjaj bin Asy Sya'ir] telah menceritakan kepada kami [Yunus bin Muhammad] telah menceritakan kepada kami [Al Mu'tamir] dari [Bapaknya] dari [Yahya bin Ya'mar] dari [Ibnu Umar] dari [Umar] dari Nabi shallallahu 'alaihi wa sallam dengan semisal hadits mereka.</div>
+        <div class="hadist-source">Hr. Muslim</div>
+    </div>
+
+    <div class="hadist-item">
+        <div class="hadist-title"></div>
+        <div class="hadist-arabic" style="font-family: 'Traditional Arabic', Arial; font-size: 20px; text-align: right; direction: rtl; margin-bottom: 10px; line-height: 1.8;">
+
+        </div>
+        <div class="hadist-text"></div>
+        <div class="hadist-source"></div>
+    </div>
+
+    <script>
+        // Fungsi pencarian hadist
+        function searchHadist() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const hadistItems = document.querySelectorAll('.hadist-item');
+            
+            hadistItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchInput) || searchInput === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Fungsi filter berdasarkan kategori
+        function filterCategory(element, category) {
+            // Hapus kelas aktif dari semua kategori
+            document.querySelectorAll('.category').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Tambahkan kelas aktif pada kategori yang dipilih
+            element.classList.add('active');
+            
+            // Logika filter hadist berdasarkan kategori (untuk contoh, semua hadist tetap ditampilkan)
+            const hadistItems = document.querySelectorAll('.hadist-item');
+            
+            if (category === 'semua') {
+                hadistItems.forEach(item => {
+                    item.style.display = 'block';
+                });
+                return;
+            }
+            
+            // Contoh hadist berdasarkan kategori (dalam implementasi nyata, akan menggunakan database)
+            const categoryMapping = {
+                'akhlak': ['Keutamaan Sabar', 'Akhlak Nabi Muhammad SAW', 'Menjaga Lisan'],
+                'ibadah': ['Pentingnya Shalat', 'Niat Dalam Beramal', 'Keutamaan Puasa', 'Keutamaan Dzikir'],
+                'muamalah': ['Menjaga Lisan', 'Keutamaan Sedekah', 'Tiga Amalan yang Tidak Terputus'],
+                'aqidah': ['Halal dan Haram dalam Islam', 'Tiga Tingkatan Agama'],
+                'adab': ['Keutamaan Menuntut Ilmu', 'Memuliakan Tamu', 'Larangan Melaknat Orang Tua'],
+                'ilmu': ['Keutamaan Menuntut Ilmu', 'Tiga Tingkatan Agama']
+            };
+            
+            hadistItems.forEach(item => {
+                const title = item.querySelector('.hadist-title').textContent;
+                if (categoryMapping[category] && categoryMapping[category].includes(title)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Fungsi pengurutan hadist (contoh sederhana: membalik urutan)
+        function sortHadist() {
+            const hadistList = document.getElementById('hadistList');
+            const hadistItems = Array.from(hadistList.querySelectorAll('.hadist-item'));
+            
+            // Membalik urutan elemen
+            hadistItems.reverse().forEach(item => {
+                hadistList.appendChild(item);
+            });
+        }
+        
+        // Fungsi toggle favorit (contoh sederhana: menambahkan/menghapus tanda bintang)
+        function toggleFavorite() {
+            alert('Fitur favorit akan segera tersedia!');
+        }
+        
+        // Tambahkan event listener untuk input pencarian
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchHadist();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Islami</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header, .current-date {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #554d4d;
+            line-height: 1.5;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        
+        h1 {
+            color: #009973;
+            margin-bottom: 10px;
+        }
+        
+        .current-date .hijri-date {
+            color: #2cb200;
+            font-style: italic;
+        }
+        
+        /* Prayer Times Container */
+        .prayer-container {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .ornament {
+            background-color: #e6a817;
+            height: 80px;
+            border-radius: 0 0 50% 50% / 0 0 100% 100%;
+            margin: -20px -20px 20px -20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 40px;
+        }
+        
+        .ornament h2 {
+            color: #21a685;
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+        
+        .prayer-times {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .prayer-card {
+            background-color: hsl(207, 12%, 34%);
+            color: white;
+            border-radius: 50px;
+            padding: 15px;
+            text-align: center;
+            width: calc(20% - 10px);
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prayer-card.active {
+            background-color: #e6a817;
+        }
+        
+        .prayer-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .prayer-card p {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .prayer-card small {
+            display: block;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #e6a817;
+        }
+        
+        .next-prayer {
+            background-color: #e6a817;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px auto;
+            max-width: 300px;
+        }
+        
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-card {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 40px;
+            color: #009973;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            color: #e6a817;
+            margin-bottom: 10px;
+        }
+       
+        
+        /* Daily Hadith */
+        .hadith-container {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 80px;
+        }
+        
+        .hadith-container h2 {
+            color: #009973;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .hadith-text {
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .hadith-source {
+            text-align: right;
+            color: #e6a817;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .prayer-card {
+                width: calc(33.33% - 10px);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .prayer-card {
+                width: calc(50% - 10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Islamic Apps</h1>
+            <p>Jadwal Sholat, Quiz Tajwid, dan Hadist</p>
+        </div>
+        
+        <div class="current-date" id="current-date">
+            <!-- Tanggal dan waktu akan diisi oleh JavaScript -->
+        </div>
+        
+        <div class="prayer-container">
+            <div class="ornament">
+                <h2>WAKTU SHOLAT</h2>
+            </div>
+            
+            <div class="prayer-times">
+                <div class="prayer-card" id="subuh">
+                    <h3>SUBUH</h3>
+                    <p>4:36</p>
+                </div>
+                
+                <div class="prayer-card" id="dzuhur">
+                    <h3>DZUHUR</h3>
+                    <p>11:53</p>
+                </div>
+                
+                <div class="prayer-card" id="ashar">
+                    <h3>ASHAR</h3>
+                    <p>15:14</p>
+                </div>
+                
+                <div class="prayer-card" id="maghrib">
+                    <h3>MAGHRIB</h3>
+                    <p>17:49</p>
+                </div>
+                
+                <div class="prayer-card" id="isya">
+                    <h3>ISYA</h3>
+                    <p>19:01</p>
+                </div>
+            </div>
+            
+            <div class="next-prayer">
+                <p id="next-prayer-text">Waktu Sholat Berikutnya: <span id="next-prayer-name">--</span></p>
+                <p>Dalam: <span id="countdown">--:--:--</span></p>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card" onclick="location.href='tajwid.html'">
+                <div class="feature-icon">📚</div>
+                <h3>Quiz Tajwid</h3>
+                <p>Uji pengetahuan Anda tentang ilmu tajwid Al-Qur'an</p>
+            </div>
+            
+            <div class="feature-card" onclick="location.href='hadith.html'">
+                <div class="feature-icon">🕌</div>
+                <h3>Hadist</h3>
+                <p>Pelajari islam lebih dalam melalui hadist</p>
+            </div>
+        </div>
+        
+        <div class="hadith-container">
+            <h2>Hadist Hari Ini</h2>
+            <p class="hadith-text">"Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lainnya."</p>
+            <p class="hadith-source">HR. Ahmad, ath-Thabrani, ad-Daruqutni</p>
+        </div>
+    </div>
+
+    
+    <script>
+        // Data waktu sholat (dalam format 24 jam)
+        const prayerTimes = {
+            subuh: { hour: 4, minute: 36 },
+            dzuhur: { hour: 11, minute: 53 },
+            ashar: { hour: 15, minute: 14 },
+            maghrib: { hour: 17, minute: 49 },
+            isya: { hour: 19, minute: 1 }
+        };
+        
+        // Nama waktu sholat dalam bahasa Indonesia
+        const prayerNames = {
+            subuh: "Subuh",
+            dzuhur: "Dzuhur",
+            ashar: "Ashar",
+            maghrib: "Maghrib",
+            isya: "Isya"
+        };
+        
+        // Nama bulan Hijriah
+        const hijriMonths = [
+            "Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir", 
+            "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", 
+            "Ramadhan", "Syawal", "Dzulqaidah", "Dzulhijjah"
+        ];
+        
+        // Nama hari dalam bahasa Arab
+        const hijriDays = [
+            "Ahad", "Isnain", "Tsulatsa", "Arbi'a", 
+            "Khamis", "Jumu'ah", "Sabt"
+        ];
+        
+        // Fungsi untuk mengkonversi tanggal Masehi ke Hijriah
+        function gregorianToHijri(date) {
+            // Algoritma konversi dari kalender Gregorian ke Hijriah
+            // Berdasarkan algoritma dari "Calendrical Calculations" oleh Nachum Dershowitz dan Edward Reingold
+            
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            
+            // Konversi tanggal Gregorian ke Julian Day Number
+            let jd = Math.floor((1461 * (year + 4800 + Math.floor((month - 14) / 12))) / 4) +
+                     Math.floor((367 * (month - 2 - 12 * Math.floor((month - 14) / 12))) / 12) -
+                     Math.floor((3 * Math.floor((year + 4900 + Math.floor((month - 14) / 12)) / 100)) / 4) +
+                     day - 32075;
+            
+            // Koreksi untuk Julian Day Number
+            jd = jd - 1948440 + 10632;
+            
+            // Perhitungan untuk kalender Hijriah
+            const n = Math.floor((jd - 1) / 10631);
+            jd = jd - 10631 * n + 354;
+            
+            // Menghitung tahun, bulan, dan tanggal Hijriah
+            const j = Math.floor((10985 - jd) / 5316) * Math.floor((50 * jd) / 17719) + 
+                     Math.floor(jd / 5670) * Math.floor((43 * jd) / 15238);
+            jd = jd - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) - 
+                 Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+            
+            const month_h = Math.floor((24 * jd) / 709);
+            const day_h = jd - Math.floor((709 * month_h) / 24);
+            const year_h = 30 * n + j - 30;
+            
+            return {
+                day: day_h,
+                month: month_h + 1, // Bulan Hijriah dimulai dari 1
+                year: year_h,
+                monthName: hijriMonths[month_h],
+                dayName: hijriDays[date.getDay()]
+            };
+        }
+        
+        // Update tanggal dan waktu sekarang (termasuk Hijriah)
+        function updateDateTime() {
+            const now = new Date();
+                
+            // Format tanggal Masehi
+            const optionsGregorian = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const gregorianDate = now.toLocaleDateString('id-ID', optionsGregorian);
+        }
+        
+        // Format waktu
+function updateDateTime() {
+    const now = new Date();
+
+    // Format tanggal Gregorian
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const gregorianDate = now.toLocaleDateString('id-ID', options);
+    
+    // Format waktu
+    const currentHours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const timeStr = `${currentHours}:${minutes}:${seconds}`;
+    
+    // Konversi ke tanggal Hijriah
+    const hijriDate = gregorianToHijri(now);
+    const hijriDateStr = `${hijriDate.dayName}, ${hijriDate.day} ${hijriDate.monthName} ${hijriDate.year} H`;
+    
+    // Update elemen HTML
+    document.getElementById('current-date').innerHTML = 
+        gregorianDate + "<br>" + timeStr + "<br>" + hijriDateStr;
+}
+
+// Fungsi untuk mendapatkan waktu sholat berikutnya
+function getNextPrayer() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentSecond = now.getSeconds();
+    
+    // Mengonversi waktu saat ini ke detik total sejak tengah malam
+    const currentTotalSeconds = (currentHour * 60 + currentMinute) * 60 + currentSecond;
+    
+    let nextPrayer = null;
+    let minDifference = Infinity;
+    
+    // Periksa semua waktu sholat
+    for (const [prayer, time] of Object.entries(prayerTimes)) {
+        // Mengonversi waktu sholat ke detik total (asumsi detik = 0)
+        const prayerTotalSeconds = (time.hour * 60 + time.minute) * 60;
+        
+        // Hitung selisih waktu (dalam detik)
+        let difference = prayerTotalSeconds - currentTotalSeconds;
+        
+        // Jika waktu sholat sudah lewat hari ini, tambahkan 24 jam (86400 detik)
+        if (difference < 0) {
+            difference += 86400; // 24 jam * 60 menit * 60 detik
+        }
+        
+        // Jika ini adalah waktu sholat terdekat berikutnya
+        if (difference < minDifference) {
+            minDifference = difference;
+            nextPrayer = prayer;
+        }
+    }
+    
+    return {
+        name: nextPrayer,
+        difference: minDifference // dalam detik
+    };
+}
+
+// Format waktu menjadi string HH:MM:SS
+function formatTime(totalSeconds) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    
+    return (hours < 10 ? '0' + hours : hours) + ':' + 
+           (minutes < 10 ? '0' + minutes : minutes) + ':' + 
+           (seconds < 10 ? '0' + seconds : seconds);
+}
+
+// Highlight waktu sholat yang aktif
+function highlightActivePrayer() {
+    // Reset semua highlight
+    document.querySelectorAll('.prayer-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    
+    // Dapatkan waktu sholat berikutnya
+    const next = getNextPrayer();
+    
+    // Highlight waktu sholat berikutnya
+    if (next.name) {
+        document.getElementById(next.name).classList.add('active');
+        document.getElementById('next-prayer-name').textContent = prayerNames[next.name];
+    }
+}
+
+// Fungsi countdown untuk waktu sholat berikutnya
+function updateCountdown() {
+    const next = getNextPrayer();
+    
+    if (next.name) {
+        // Konversi perbedaan detik menjadi format waktu
+        const countdownStr = formatTime(next.difference);
+        document.getElementById('countdown').innerHTML = countdownStr;
+        document.getElementById('next-prayer-name').textContent = prayerNames[next.name];
+    } else {
+        document.getElementById('countdown').innerHTML = "--:--:--";
+        document.getElementById('next-prayer-name').textContent = "--";
+    }
+    
+    // Perbarui UI untuk menunjukkan waktu sholat berikutnya
+    highlightActivePrayer();
+    
+    // Perbarui setiap detik
+    setTimeout(updateCountdown, 1000);
+}
+
+// Panggil fungsi saat halaman dimuat
+window.onload = function() {
+    updateDateTime();
+    updateCountdown();
+    
+    // Update tanggal dan waktu setiap detik untuk menampilkan waktu berjalan
+    setInterval(updateDateTime, 1000);
+};
+    </script>
+</body>
+</html>
